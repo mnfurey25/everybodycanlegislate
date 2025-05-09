@@ -1,0 +1,113 @@
+---
+output:
+  word_document:
+    reference_docx: word_us_bill_ref.docx
+params:
+  bill_name: params$bill_name
+  bill_number: params$bill_number
+  bill_purpose: params$bill_purpose
+  cosponsors: params$cosponsors
+  bill_url: params$bill_url
+---
+
+---
+title: H.R. `r params$bill_number` 
+---
+
+```{r include=FALSE}
+library(tidyverse)
+library(httr)
+#Yihui Xie, Christophe Dervieux, Emily Riederer, 16. Source External R Scripts, in R Markdown Cookbook (Apr. 3, 2025), https://bookdown.org/yihui/rmarkdown-cookbook/source-script.html
+source("utils_read_github_pr.R",
+       local=knitr::knit_global())
+source("utils_markdown_sections.R",
+       local=knitr::knit_global())
+
+
+#Reading github pull request
+df <- read_github_pr(params$bill_url)
+
+#Label additions in the pull request.
+df <- label_additions(df)
+
+#Label substraction in the pull request
+df <- label_subtraction(df)
+
+#Convert to lines
+all_text <- df$lines
+
+#Create a dataframe of all changes in the github pull request. 
+all_changes <- df_section_changes(all_text)
+
+#Get a dataframe of all additions from those changes.
+additions <- get_additions(all_changes)
+```
+
+# `r params$bill_purpose`
+
+
+
+-----------------------------------------
+
+
+
+
+## IN THE HOUSE OF REPRESENTATIVES
+
+\n
+\n
+
+
+
+
+### `r format(Sys.Date(), "%B %d, %Y")`
+
+\n
+\n
+
+
+
+#### `r params$cosponsors` introduced the following bill
+
+\n
+\n
+
+-----------------------------------------
+
+##### A BILL
+
+\n
+\n
+
+
+
+## `r params$bill_purpose`
+
+\n
+\n
+
+
+
+###### *Be it enacted by the Senate and House of Representatives of the United States of America in Congress assembled,*
+
+\n\n
+
+
+
+####### Sec. 1. Short Title
+
+\n
+\n
+
+
+
+######## This Act may be cited as `r params$bill_name`.
+
+\n
+\n
+
+
+
+`r create_sections(additions)`
+
+
