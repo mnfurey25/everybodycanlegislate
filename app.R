@@ -1,6 +1,7 @@
 library(shiny)
 library(shinyFeedback)
 library(knitr)
+library(stringr)
 
 #Code is drawn from the sources in the comments.
 
